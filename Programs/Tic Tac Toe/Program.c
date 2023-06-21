@@ -2,6 +2,7 @@
 #include<stdlib.h>
 
 char board[3][3];
+char winner = ' ';
 const char player = 'X';
 const char computer = 'O';
 
@@ -15,22 +16,26 @@ void printWinner(char);
 
 int main()
 {
-    char winner = ' ';
     resetBoard();
     
     while(checkEmptySpaces() != 0 && ' ' == winner)
     {
         playerMove();
         winner = checkWinner();
-        if(winner == 'P')
-        {
-            
-        }
 
         computerMove();
         winner = checkWinner();
     }
     
+    if(winner == player)
+    {
+        printWinner(player);
+    }
+
+    if(winner == computer)
+    {
+        printWinner(computer);
+    }
 
     return 0;
 }
@@ -50,7 +55,7 @@ void printBoard()
 {
     printf(" %c | %c | %c \n", board[0][0], board[0][1], board[0][2]);
     printf(" %c | %c | %c \n", board[1][0], board[1][1], board[1][2]);
-    printf(" %c | %c | %c \n", board[2][0], board[2][1], board[2][2]);
+    printf(" %c | %c | %c \n\n", board[2][0], board[2][1], board[2][2]);
 }
 
 int checkEmptySpaces()
@@ -82,7 +87,7 @@ void playerMove()
     scanf("%i", &row);
 
     board[row - 1][column - 1] = player;
-    printf("The board is now:\n");
+    printf("\nThe board is now:\n");
     printBoard();
 }
 
@@ -99,12 +104,12 @@ char checkWinner()
     {
         if(board[0][x] == 'X' && board[1][x] == 'X' && board[2][x] == 'X')
         {
-            result = 'P';
+            result = player;
         }
 
         if(board[0][x] == 'O' && board[1][x] == 'O' && board[2][x] == 'O')
         {
-            result = 'C';
+            result = computer;
         }
     }
 
@@ -112,13 +117,27 @@ char checkWinner()
     {
         if(board[x][0] == 'X' && board[x][1] == 'X' && board[x][2] == 'X')
         {
-            result = 'P';
+            result = player;
         }
 
         if(board[x][0] == 'O' && board[x][1] == 'O' && board[x][2] == 'O')
         {
-            result = 'C';
+            result = computer;
         }
+    }
+
+    if(board[0][0] == 'O' && board[1][1] == 'O' && board[2][2] == 'O')
+    {
+        result = computer;
+    }
+    else if(board[0][0] == 'X' && board[1][1] == 'X' && board[2][2] == 'X')
+    {
+        result = player;
+    }
+
+    if(checkEmptySpaces() == 0)
+    {
+        result = 'T';
     }
 
     return result;
@@ -127,4 +146,18 @@ char checkWinner()
 void printWinner(char winner)
 {
     
+    if(winner == player)
+    {
+        printf("\nThe winner is the player!!!");
+    }
+
+    if(winner == computer)
+    {
+        printf("\nThe winner is the computer!!!");
+    }
+
+    if(winner == 'T')
+    {
+        printf("\nA tie has been reached!!!");
+    }
 }
