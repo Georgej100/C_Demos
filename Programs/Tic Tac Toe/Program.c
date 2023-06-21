@@ -13,6 +13,7 @@ void playerMove();
 void computerMove();
 char checkWinner();
 void printWinner(char);
+int miniMax(int, int);
 
 int main()
 {
@@ -93,7 +94,7 @@ void playerMove()
 
 void computerMove()
 {
-
+    
 }
 
 char checkWinner()
@@ -159,5 +160,69 @@ void printWinner(char winner)
     if(winner == 'T')
     {
         printf("\nA tie has been reached!!!");
+    }
+}
+
+int miniMax(int depth, int isMaximising)
+{
+    const int scores[3] = {-1, 0, 1};
+    int bestScore = NULL;
+    
+    if(checkWinner() != ' ' || checkWinner() != 'T')
+    {
+        bestScore = scores[1];
+    }
+    else if(checkWinner() == player)
+    {
+        bestScore = scores[2];
+    }
+    else if(checkWinner() == computer)
+    {
+        bestScore = scores[0];
+    }
+    else
+    {
+        if(isMaximising == 1)
+        {
+            for(int x = 0; x < 3; x++)
+            {
+                for(int y = 0; y < 3; y++)
+                {
+                    if(board[x][y] == '-')
+                    {
+                        board[x][y] = computer;
+                        int score = miniMax(depth + 1, 0);
+                        board[x][y] = '-';
+                        if(score > bestScore)
+                        {
+                            bestScore = score;
+                        }
+                    }
+                }
+            }
+
+            return bestScore;
+        }
+        else
+        {
+            for(int x = 0; x < 3; x++)
+            {
+                for(int y = 0; y < 3; y++)
+                {
+                    if(board[x][y] == '-')
+                    {
+                        board[x][y] = player;
+                        int score = miniMax(depth + 1, 1);
+                        board[x][y] = '-';
+                        if(score < bestScore)
+                        {
+                            bestScore = score;
+                        }
+                    }
+                }
+            }
+
+            return bestScore;
+        }
     }
 }
