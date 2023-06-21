@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include<math.h>
 
 char board[3][3];
 char winner = ' ';
@@ -87,6 +88,12 @@ void playerMove()
     printf("Please enter a row number\n");
     scanf("%i", &row);
 
+    if(board[column - 1][row - 1] != '-')
+    {
+        printf("That is already taken!\n");
+        playerMove();
+    }
+
     board[row - 1][column - 1] = player;
     printf("\nThe board is now:\n");
     printBoard();
@@ -94,7 +101,31 @@ void playerMove()
 
 void computerMove()
 {
+    int bestScore;
+    int bestMove[2] = {2, 0};
     
+    for(int x = 0; x < 3; x++)
+    {
+        for(int y = 0; y < 3; y++)
+        {
+            if(board[x][y] == '-')
+            {
+                board[x][y] = computer;
+                int score = miniMax(10, 1);
+                board[x][y] = '-';
+                if(score > bestScore)
+                {
+                    bestScore = score;
+                    bestMove[0] = x;
+                    bestMove[1] = y;
+                }
+            }
+        }
+    }
+
+    board[bestMove[0]][bestMove[1]] = computer;
+    printBoard();
+    printf("%i, %i\n", bestMove[0], bestMove[1]);
 }
 
 char checkWinner()
@@ -166,7 +197,7 @@ void printWinner(char winner)
 int miniMax(int depth, int isMaximising)
 {
     const int scores[3] = {-1, 0, 1};
-    int bestScore = NULL;
+    int bestScore;
     
     if(checkWinner() != ' ' || checkWinner() != 'T')
     {
@@ -184,6 +215,7 @@ int miniMax(int depth, int isMaximising)
     {
         if(isMaximising == 1)
         {
+            bestScore = -INFINITY;
             for(int x = 0; x < 3; x++)
             {
                 for(int y = 0; y < 3; y++)
@@ -205,6 +237,8 @@ int miniMax(int depth, int isMaximising)
         }
         else
         {
+            bestScore = INFINITY;
+            
             for(int x = 0; x < 3; x++)
             {
                 for(int y = 0; y < 3; y++)
