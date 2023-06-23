@@ -24,19 +24,19 @@ int main()
     {
         playerMove();
         winner = checkWinner();
+        if(winner == player)
+        {
+            printWinner(player);
+            return 0;
+        }
 
         computerMove();
         winner = checkWinner();
-    }
-    
-    if(winner == player)
-    {
-        printWinner(player);
-    }
-
-    if(winner == computer)
-    {
-        printWinner(computer);
+        if(winner == computer)
+        {
+            printWinner(computer);
+            return 0;
+        }
     }
 
     return 0;
@@ -56,7 +56,9 @@ void resetBoard()
 void printBoard()
 {
     printf(" %c | %c | %c \n", board[0][0], board[0][1], board[0][2]);
+    printf("-----------\n");
     printf(" %c | %c | %c \n", board[1][0], board[1][1], board[1][2]);
+    printf("-----------\n");
     printf(" %c | %c | %c \n\n", board[2][0], board[2][1], board[2][2]);
 }
 
@@ -88,21 +90,22 @@ void playerMove()
     printf("Please enter a row number\n");
     scanf("%i", &row);
 
-    if(board[column - 1][row - 1] != '-')
+    if(board[column - 1][row - 1] == player || board[column - 1][row - 1] == computer)
     {
         printf("That is already taken!\n");
         playerMove();
+    }else
+    {
+        board[row - 1][column - 1] = player;
+        printf("\nThe board is now:\n");
+        printBoard();
     }
-
-    board[row - 1][column - 1] = player;
-    printf("\nThe board is now:\n");
-    printBoard();
 }
 
 void computerMove()
 {
-    int bestScore;
-    int bestMove[2] = {2, 0};
+    int bestScore = -INFINITY;
+    int bestMove[2];
     
     for(int x = 0; x < 3; x++)
     {
@@ -111,7 +114,7 @@ void computerMove()
             if(board[x][y] == '-')
             {
                 board[x][y] = computer;
-                int score = miniMax(10, 1);
+                int score = miniMax(-1, 1); 
                 board[x][y] = '-';
                 if(score > bestScore)
                 {
@@ -122,10 +125,10 @@ void computerMove()
             }
         }
     }
-
+    
     board[bestMove[0]][bestMove[1]] = computer;
     printBoard();
-    printf("%i, %i\n", bestMove[0], bestMove[1]);
+    printf("%i, %i\n", bestMove[0] + 1, bestMove[1] + 1);
 }
 
 char checkWinner()
@@ -167,6 +170,15 @@ char checkWinner()
         result = player;
     }
 
+    if(board[2][0] == 'O' && board[1][1] == 'O' && board[0][2] == 'O')
+    {
+        result = computer;
+    }
+    else if(board[2][0] == 'X' && board[1][1] == 'X' && board[0][2] == 'X')
+    {
+        result = player;
+    }
+
     if(checkEmptySpaces() == 0)
     {
         result = 'T';
@@ -199,64 +211,65 @@ int miniMax(int depth, int isMaximising)
     const int scores[3] = {-1, 0, 1};
     int bestScore;
     
-    if(checkWinner() != ' ' || checkWinner() != 'T')
+    if(checkWinner() == 'T')
     {
-        bestScore = scores[1];
+        return scores[1];
     }
-    else if(checkWinner() == player)
+
+    if(checkWinner() == player)
     {
-        bestScore = scores[2];
+        return scores[2];
     }
-    else if(checkWinner() == computer)
+
+    if(checkWinner() == computer)
     {
-        bestScore = scores[0];
+        return scores[0];
     }
-    else
+
+    if(isMaximising == 1)
     {
-        if(isMaximising == 1)
+        bestScore = -INFINITY;
+        for(int x = 0; x < 3; x++)
         {
-            bestScore = -INFINITY;
-            for(int x = 0; x < 3; x++)
+            for(int y = 0; y < 3; y++)
             {
-                for(int y = 0; y < 3; y++)
+                if(board[x][y] == '-')
                 {
-                    if(board[x][y] == '-')
+                    board[x][y] = computer;
+                    int score = miniMax(depth + 1, 0);
+                    board[x][y] = '-';
+                    if(score > bestScore)
                     {
-                        board[x][y] = computer;
-                        int score = miniMax(depth + 1, 0);
-                        board[x][y] = '-';
-                        if(score > bestScore)
-                        {
-                            bestScore = score;
-                        }
+                        bestScore = score;
                     }
                 }
             }
-
-            return bestScore;
         }
-        else
+
+        return bestScore;
+    }
+    
+    if(isMaximising == 0)
+    {
+        bestScore = INFINITY;
+        
+        for(int x = 0; x < 3; x++)
         {
-            bestScore = INFINITY;
-            
-            for(int x = 0; x < 3; x++)
+            for(int y = 0; y < 3; y++)
             {
-                for(int y = 0; y < 3; y++)
+                if(board[x][y] == '-')
                 {
-                    if(board[x][y] == '-')
+                    board[x][y] = player;
+                    int score = miniMax(depth + 1, 1);
+                    board[x][y] = '-';
+                    if(score > bestScore)
                     {
-                        board[x][y] = player;
-                        int score = miniMax(depth + 1, 1);
-                        board[x][y] = '-';
-                        if(score < bestScore)
-                        {
-                            bestScore = score;
-                        }
+                        bestScore = score;
                     }
                 }
             }
-
-            return bestScore;
         }
+
+        return bestScore;
     }
 }
