@@ -85,10 +85,10 @@ void playerMove()
     int row = 0;
     int column = 0; 
     printf("Please enter a column number\n");
-    scanf("%i", &column);
+    scanf("%i", &row);
 
     printf("Please enter a row number\n");
-    scanf("%i", &row);
+    scanf("%i", &column);
 
     if(board[column - 1][row - 1] == player || board[column - 1][row - 1] == computer)
     {
@@ -97,14 +97,14 @@ void playerMove()
     }else
     {
         board[column - 1][row - 1] = player;
-        printf("\nThe board is now:\n");
+        printf("\nYou went here:\n");
         printBoard();
     }
 }
 
 void computerMove()
 {
-    int bestScore = -INFINITY;
+    float bestScore = -INFINITY;
     int bestMove[2];
     
     for(int x = 0; x < 3; x++)
@@ -114,7 +114,7 @@ void computerMove()
             if(board[x][y] == '-')
             {
                 board[x][y] = computer;
-                int score = miniMax(-1, 1); 
+                int score = miniMax(2, 0); 
                 board[x][y] = '-';
                 if(score > bestScore)
                 {
@@ -127,8 +127,8 @@ void computerMove()
     }
     
     board[bestMove[0]][bestMove[1]] = computer;
+    printf("\nThe computer went here:\n");
     printBoard();
-    printf("%i, %i\n", bestMove[0] + 1, bestMove[1] + 1);
 }
 
 char checkWinner()
@@ -208,22 +208,21 @@ void printWinner(char winner)
 
 int miniMax(int depth, int isMaximising)
 {
-    const int scores[3] = {-1, 0, 1};
-    int bestScore;
+    float bestScore;
     
     if(checkWinner() == 'T')
     {
-        return scores[1];
+        return 0;
     }
 
     if(checkWinner() == player)
     {
-        return scores[2];
+        return -1;
     }
 
     if(checkWinner() == computer)
     {
-        return scores[0];
+        return 1;
     }
 
     if(isMaximising == 1)
@@ -262,7 +261,7 @@ int miniMax(int depth, int isMaximising)
                     board[x][y] = player;
                     int score = miniMax(depth + 1, 1);
                     board[x][y] = '-';
-                    if(score > bestScore)
+                    if(score < bestScore)
                     {
                         bestScore = score;
                     }
