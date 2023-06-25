@@ -96,7 +96,7 @@ void playerMove()
         playerMove();
     }else
     {
-        board[row - 1][column - 1] = player;
+        board[column - 1][row - 1] = player;
         printf("\nThe board is now:\n");
         printBoard();
     }
