@@ -4,8 +4,8 @@
 
 char board[3][3];
 char winner = ' ';
-const char player = 'X';
-const char computer = 'O';
+const char player = 'O';
+const char computer = 'X';
 
 void resetBoard();
 void printBoard();
@@ -22,13 +22,6 @@ int main()
     
     while(checkEmptySpaces() != 0 && ' ' == winner)
     {
-        playerMove();
-        winner = checkWinner();
-        if(winner == player)
-        {
-            printWinner(player);
-            return 0;
-        }
 
         computerMove();
         winner = checkWinner();
@@ -37,8 +30,30 @@ int main()
             printWinner(computer);
             return 0;
         }
-    }
 
+        winner = checkWinner();
+        if(winner == 'T')
+        {
+            printWinner('T');
+            printf("hi");
+            return 0;
+        }
+
+        playerMove();
+        winner = checkWinner();
+        if(winner == player)
+        {
+            printWinner(player);
+            return 0;
+        }
+
+        winner = checkWinner();
+        if(winner == 'T')
+        {
+            printWinner('T');
+            return 0;
+        }
+    }
     return 0;
 }
 
@@ -70,7 +85,7 @@ int checkEmptySpaces()
     {
         for(int y = 0; y < 3; y++)
         {
-            if('-' == board[x][y])
+            if(board[x][y] == '-')
             {
                 result += 1;
             }
@@ -94,7 +109,13 @@ void playerMove()
     {
         printf("That is already taken!\n");
         playerMove();
-    }else
+    }
+    else if(column > 3 || row > 3)
+    {
+        printf("That position is invalid!\n");
+        playerMove();
+    }
+    else
     {
         board[column - 1][row - 1] = player;
         printf("\nYou went here:\n");
@@ -114,7 +135,7 @@ void computerMove()
             if(board[x][y] == '-')
             {
                 board[x][y] = computer;
-                int score = miniMax(2, 0); 
+                int score = miniMax(0, 0); 
                 board[x][y] = '-';
                 if(score > bestScore)
                 {
@@ -139,12 +160,12 @@ char checkWinner()
     {
         if(board[0][x] == 'X' && board[1][x] == 'X' && board[2][x] == 'X')
         {
-            result = player;
+            result = computer;
         }
 
         if(board[0][x] == 'O' && board[1][x] == 'O' && board[2][x] == 'O')
         {
-            result = computer;
+            result = player;
         }
     }
 
@@ -152,31 +173,31 @@ char checkWinner()
     {
         if(board[x][0] == 'X' && board[x][1] == 'X' && board[x][2] == 'X')
         {
-            result = player;
+            result = computer;
         }
 
         if(board[x][0] == 'O' && board[x][1] == 'O' && board[x][2] == 'O')
         {
-            result = computer;
+            result = player;
         }
     }
 
     if(board[0][0] == 'O' && board[1][1] == 'O' && board[2][2] == 'O')
     {
-        result = computer;
+        result = player;
     }
     else if(board[0][0] == 'X' && board[1][1] == 'X' && board[2][2] == 'X')
     {
-        result = player;
+        result = computer;
     }
 
     if(board[2][0] == 'O' && board[1][1] == 'O' && board[0][2] == 'O')
     {
-        result = computer;
+        result = player;
     }
     else if(board[2][0] == 'X' && board[1][1] == 'X' && board[0][2] == 'X')
     {
-        result = player;
+        result = computer;
     }
 
     if(checkEmptySpaces() == 0)
@@ -246,9 +267,7 @@ int miniMax(int depth, int isMaximising)
         }
 
         return bestScore;
-    }
-    
-    if(isMaximising == 0)
+    }else
     {
         bestScore = INFINITY;
         
