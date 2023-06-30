@@ -1,7 +1,0 @@
-{
-    "files.associations": {
-        "HelloWorld.C": "cpp",
-        "DynamicVsStaticMemory.C": "cpp"
-    },
-    "C_Cpp.errorSquiggles": "enabled"
-}
